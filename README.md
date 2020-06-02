@@ -1,6 +1,9 @@
 # Dino-Run
 A simple and colorful dinosaur game written in python.
 
+# Images
+![Sample Image](./image.png)
+
 # Dependencies
 - [PyGame](https://pypi.org/project/pygame/)
 
