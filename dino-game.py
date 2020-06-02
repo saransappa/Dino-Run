@@ -53,7 +53,7 @@ for i in range(num_of_clouds):
 enemyImage= []
 enemyX = []
 enemyY= 430
-enemyX_change = -5
+enemyX_change = -4
 enemyY_change = 0
 enemy1 = pygame.image.load('cactus1.png')
 enemy2 = pygame.image.load('cactus2.png')
@@ -75,7 +75,7 @@ birdImage = []
 birdX = []
 birdY = 375
 
-birdX_change = -5
+birdX_change = -4
 birdY_change = 0
 for i in range(num_of_birds//3):
     for j in range(num_of_birds):
@@ -127,7 +127,7 @@ def  bird(i):
 
 def isCollision(a, b, c, d):
     distance = math.sqrt(math.pow(a-c, 2)+math.pow(b-d,2))
-    if distance <= 7 or distance-32 <=7:
+    if distance <= 1 or distance-32 <=1:
         return True
     else:
         return False 
@@ -245,8 +245,11 @@ while running:
 
         birdX[i] += birdX_change
         if birdX[i] <= 0:
-            birdX[i] = randint(2500, 3000)
-
+            birdX[i] = randint(3000, 3050)
+        for j in range(num_of_enemies):
+            if abs(birdX[i] - enemyX[j]) <= 105 or abs(birdX[i] - enemyX[j]-32)<=105 or abs(birdX[i] +32 - enemyX[j])<=105:
+                birdX[i] += 60
+   
     player(playerX,playerY)
     show_score(textX,textY,score)
     show_high_score(highX, highY)
