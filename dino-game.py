@@ -73,7 +73,7 @@ bird = pygame.image.load('bird.png')
 num_of_birds = 3
 birdImage = []
 birdX = []
-birdY = 410
+birdY = 375
 
 birdX_change = -5
 birdY_change = 0
