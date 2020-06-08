@@ -1,6 +1,7 @@
 import pygame 
 import random
 import math
+import time
 from random import randint
 from pygame import mixer
 # Initialize pygame
@@ -48,7 +49,6 @@ num_of_clouds = 6
 for i in range(num_of_clouds):
     cloudX_change.append(-1*random.uniform(0.0,0.9))
 
-
 # Cactus
 enemyImage= []
 enemyX = []
@@ -86,6 +86,7 @@ for i in range(num_of_birds//3):
 
 # Score
 score = 0
+score_change = 0.01
 font = pygame.font.Font('freesansbold.ttf', 32)
 textX = 10
 textY = 10
@@ -100,7 +101,8 @@ highX  = 10
 highY = 50
 
 # Game over text
-over_font = pygame.font.Font('freesansbold.ttf',64)
+over_font = pygame.font.Font('SEASRN__.ttf',64)
+resume_font = pygame.font.Font('freesansbold.ttf',20)
 
 # Background sound
 mixer.init() 
@@ -108,7 +110,6 @@ mixer.init()
 mixer.music.load('song.mp3')
 mixer.music.play(-1) # If we don't give -1 as argument then music is played only once
 					# mixer.music is for long time but mixer.sound is for  short time
-
 
 def player(x,y):
     screen.blit(playerImage,(x,y))
@@ -133,8 +134,24 @@ def isCollision(a, b, c, d):
         return False 
 
 def game_over_text():
-    over_text = over_font.render("GAME OVER", True, (255,255,255))
+    over_text = over_font.render("GAME OVER", True, (255,0,0))
     screen.blit(over_text, (200,250))
+    author_text = resume_font.render("Author : Saran", True, (0,100,255))
+    screen.blit(author_text, (310,500))
+
+def restart_text():
+    restart_text = resume_font.render("Press 'R' to restart", True, (0,100,255))
+    screen.blit(restart_text, (300,500))
+
+def show_pause_text():
+    pause_text = resume_font.render("Press 'P' to pause", True, (0,100,255))
+    screen.blit(pause_text, (600,30))
+
+def pause_text():
+    pause_text = over_font.render("PAUSED", True, (0,255,0))
+    screen.blit(pause_text, (270,250))
+    resume_text = resume_font.render("Press 'P' to resume", True, (0,100,255))
+    screen.blit(resume_text, (290,500))
 
 def show_score(x,y,s):
 	score = font.render("Score : "+str(int(s)), True, (255,255,255))
@@ -148,12 +165,27 @@ def roar():
     dino = mixer.Sound('roar.wav')
     dino.play()
 
+def paused():
+    pause = True
+    while pause:
+        screen.fill((0,0,0))
+        pause_text()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    time.sleep(0.1)
+                    pause = False
+                    return
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        pygame.display.update()
+
 # Game Loop
 running = True
 k = False
 while running:
     screen.fill((0,0,0))
-
     # Background image
     screen.blit(background,(0,0))
     z=1
@@ -164,8 +196,10 @@ while running:
                 f.write(str(int(score)))
                 f.close()
             running = False 
-        
+
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                paused()
             if player_state == "ready":
                 if event.key == pygame.K_SPACE:
                     jump_sound = mixer.Sound('jump.wav')
@@ -183,8 +217,6 @@ while running:
                     playerY += -1*playerY_change   
                     player_state = "ready"
     
-
-
     # Cloud Boundary
     for i in range(num_of_clouds):
         cloudX[i] += cloudX_change[i]
@@ -214,7 +246,7 @@ while running:
             k = True
             break
         else:
-            score += 0.01
+            score += score_change
             high = int(max(high,score))
             
         enemyX[i] += enemyX_change
@@ -247,11 +279,12 @@ while running:
         if birdX[i] <= 0:
             birdX[i] = randint(3000, 3050)
         for j in range(num_of_enemies):
-            if abs(birdX[i] - enemyX[j]) <= 105 or abs(birdX[i] - enemyX[j]-32)<=105 or abs(birdX[i] +32 - enemyX[j])<=105:
+            if abs(birdX[i] - enemyX[j]) <= 105 or abs(birdX[i] - enemyX[j]-32)<= 105 or abs(birdX[i] +32 - enemyX[j])<= 105:
                 birdX[i] += 60
    
     player(playerX,playerY)
     show_score(textX,textY,score)
     show_high_score(highX, highY)
+    show_pause_text()
     moon()
     pygame.display.update()
